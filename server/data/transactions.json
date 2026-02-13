@@ -1,0 +1,12 @@
+
+{
+    "transactions" : [
+        {
+            "id" : 0,
+            "header" : "Rent",
+            "transactionDate" : "2026-01-01",
+            "transactionType" : "Debit",
+            "amount" : 5000
+        }
+    ]
+}
