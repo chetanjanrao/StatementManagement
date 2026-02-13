@@ -9,9 +9,9 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import TransactionRows from "./TransactionRows";
 export default function Statement() {
-    const [Transactions, setTransaction] = useState<Transaction[]>([]);
+    const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
-    const [TransactionSummary, setTransactionSummary] = useState<TransactionSummary>({
+    const [transactionSummary, setTransactionSummary] = useState<TransactionSummary>({
         totalCredit: 0,
         totalDebit: 0,
         balance: 0
@@ -19,7 +19,7 @@ export default function Statement() {
 
     useEffect(()=>{
         getAllTransactions()
-        .then(response =>{ setTransaction(response.data)
+        .then(response =>{ setTransactions(response.data)
             console.log(response.data)
         })
         .catch((error)=>{
@@ -29,22 +29,22 @@ export default function Statement() {
     },[])
    // Sum of the colume of credit and debit column
    useEffect(()=>{
-     if(Transactions && Transactions.length > 0){
+     if(transactions && transactions.length > 0){
         const sumOfColumn = (transaction : Transaction[], target : string) =>transaction.filter(t =>t.transactionType  === target)
         .map(t=>t.amount).reduce((a1:any,a2:any)=>a1+a2,0);
 
-        const creditSum = sumOfColumn(Transactions,"CREDIT");
-        const debitSum = sumOfColumn(Transactions,"DEBIT");
+        const creditSum = sumOfColumn(transactions,"CREDIT");
+        const debitSum = sumOfColumn(transactions,"DEBIT");
         setTransactionSummary({totalCredit : creditSum,totalDebit:debitSum,balance : creditSum - debitSum})
      }else{
         setTransactionSummary({totalCredit : 0,totalDebit:0,balance : 0})
      }
-   },[Transactions])
+   },[transactions])
 
    /// Add row 
    const add = (transaction: Transaction) => {
     addTransaction(transaction)
-        .then(response => setTransaction([...transaction, { ...response.data }]))
+        .then(response => setTransactions([...transaction, { ...response.data }]))
         .catch(err => {
             console.error(err);
             setErrorMsg("Unable to save records! Please retry later!");
@@ -54,7 +54,7 @@ export default function Statement() {
 const update = (transaction: Transaction) => {
     //transaction.isEditable = undefined;
     saveTransaction(transaction.id, transaction)
-        .then(resp => setTransaction(transaction.map(t => t.id === transaction.id ? { ...resp.data } : tx)))
+        .then(resp => setTransactions(transaction.map(t => t.id === transaction.id ? { ...resp.data } : tx)))
         .catch(err => {
             console.error(err);
             setErrorMsg("Unable to save records! Please retry later!");
@@ -63,13 +63,18 @@ const update = (transaction: Transaction) => {
 
 const remove = (id: number) => {
     deleteTransactionById(id)
-        .then(_resp => setTransaction(Transactions.filter(tx => tx.id !== id)))
+        .then(_resp => setTransactions(transactions.filter(tx => tx.id !== id)))
         .catch(err => {
             console.error(err);
             setErrorMsg("Unable to remove records! Please retry later!");
         });
 }
         
+
+const edit = (id: number) => setTransactions(transactions.map(t => t.id === id ? { ...t, isEditable: true } : t))
+
+const cancelEdit = (id: number) => setTransactions(transactions.map(t => t.id === id ? { ...t, isEditable: undefined } : t));
+
    
     return (
         <>
