@@ -1,5 +1,6 @@
 import TransactionFooter from "./TransactionFooter";
 import TransactionForm from "./TransactionForm";
+import TransactionRows from "./TransactionRows";
 import TransactionHeader from "./TransactionHeader";
 import {getAllTransactions,getAllTransactionById,deleteTransactionById,addTransaction,saveTransaction} from "../Services/TransactionAPI";
 
@@ -7,7 +8,7 @@ import type { Transaction } from "../Models/Transaction";
 import type { TransactionSummary } from "../Models/TransactionSummary";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import TransactionRows from "./TransactionRows";
+
 export default function Statement() {
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -44,7 +45,7 @@ export default function Statement() {
    /// Add row 
    const add = (transaction: Transaction) => {
     addTransaction(transaction)
-        .then(response => setTransactions([...transaction, { ...response.data }]))
+        .then(response => setTransactions([...transactions, { ...response.data }]))
         .catch(err => {
             console.error(err);
             setErrorMsg("Unable to save records! Please retry later!");
@@ -54,7 +55,7 @@ export default function Statement() {
 const update = (transaction: Transaction) => {
     //transaction.isEditable = undefined;
     saveTransaction(transaction.id, transaction)
-        .then(resp => setTransactions(transaction.map(t => t.id === transaction.id ? { ...resp.data } : tx)))
+        .then(resp => setTransactions(transactions.map(t => t.id === transaction.id ? { ...resp.data } : t)))
         .catch(err => {
             console.error(err);
             setErrorMsg("Unable to save records! Please retry later!");
@@ -73,9 +74,9 @@ const remove = (id: number) => {
 
 const edit = (id: number) => setTransactions(transactions.map(t => t.id === id ? { ...t, isEditable: true } : t))
 
-const cancelEdit = (id: number) => setTransactions(transactions.map(t => t.id === id ? { ...t, isEditable: undefined } : t));
+const cancelEdit = (id: number) => setTransactions(transactions.map(t => t.id === id ? { ...t, isEditable: false } : t))
 
-   
+
     return (
         <>
             <section className="col-sm-10 m-2 mx-auto p-2">
@@ -89,13 +90,18 @@ const cancelEdit = (id: number) => setTransactions(transactions.map(t => t.id ==
                     )
                 }
                 <TransactionHeader />
-                <TransactionForm />
-                {/* {
-                   (Transaction && Transaction.length > 0 ) &&(
-                    Transaction.map((trans)=>trans.isEditable ? <TransactionForm key={trans.id}/>:<TransactionRows key={trans.id}/>)
+                   <TransactionForm  save={add}/>  
+                 
+                {
+                    transactions.length > 0  &&
+                   (
+                    transactions.map(trans=>trans.isEditable ? 
+                    <TransactionForm key={trans.id} trans={trans} save={update} cancle={cancelEdit}/>
+                    :
+                    <TransactionRows key={trans.id} txn={trans} edit={edit} remove={remove}/>)
                    )
-                } */}
-                <TransactionFooter />
+                } 
+                <TransactionFooter transactionSummary={transactionSummary}/>
             </section>
         </>
     )

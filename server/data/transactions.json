@@ -3,10 +3,18 @@
     "transactions" : [
         {
             "id" : 0,
-            "header" : "Rent",
+            "header" : "Salary",
             "transactionDate" : "2026-01-01",
-            "transactionType" : "Debit",
+            "transactionType" : "CREDIT",
+            "amount" : 75000
+        },
+        {
+            "id" : 1,
+            "header":"Grocery",
+            "transactionDate" : "2026-01-02",
+            "transactionType" : "DEBIT",
             "amount" : 5000
+            
         }
     ]
 }
