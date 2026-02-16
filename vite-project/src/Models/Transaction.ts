@@ -1,8 +1,8 @@
 export interface Transaction{
     id : number,
     header : string,
-    trasactionDate : string,
+    transactionDate : string,
     transactionType : string,
     amount: number,
-    isEditable : boolean
+    isEditable? : boolean
 } 

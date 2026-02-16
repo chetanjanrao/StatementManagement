@@ -3,10 +3,10 @@ import type { Transaction } from "../Models/Transaction";
 export default function TransactionRows({ txn, edit, remove }: { txn: Transaction, edit: (id: number) => void, remove: (id: number) => void }) {
     return (
         <>
-            <h3>Hello TransactionsaRow</h3>
+          
             <div className="row p-1 mb-1 border-bottom border-info">
                 <div className="col-1 text-end">{txn.id}</div>
-                <div className="col-2 text-center">{txn.trasactionDate}</div>
+                <div className="col-2 text-center">{txn.transactionDate}</div>
                 <div className="col">{txn.header}</div>
                 <div className="col-2 text-end">{txn.transactionType === "CREDIT" && txn.amount}</div>
                 <div className="col-2 text-end">{txn.transactionType === "DEBIT" && txn.amount}</div>

@@ -7,76 +7,49 @@ import {getAllTransactions,getAllTransactionById,deleteTransactionById,addTransa
 import type { Transaction } from "../Models/Transaction";
 import type { TransactionSummary } from "../Models/TransactionSummary";
 import { useEffect, useState } from "react";
-import axios from "axios";
+
+
+
+const data = [
+    {
+        id: 0,
+        header: "Salary",
+        transactionDate: "2026-01-01",
+        transactionType: "CREDIT",
+        amount: 75000
+    },
+    {
+        id: 1,
+        header: "Grocery",
+        transactionDate: "2026-01-02",
+        transactionType: "DEBIT",
+        amount: 5000
+    }
+];
+
+function addNewRow(){
+
+}
 
 export default function Statement() {
-    const [transactions, setTransactions] = useState<Transaction[]>([]);
+    const [transactions, setTransactions] = useState<Transaction[]>(data);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
     const [transactionSummary, setTransactionSummary] = useState<TransactionSummary>({
         totalCredit: 0,
         totalDebit: 0,
         balance: 0
     })
+   console.log(transactions)
+   
+function handleEdit()
+{
 
-    useEffect(()=>{
-        getAllTransactions()
-        .then(response =>{ setTransactions(response.data)
-            console.log(response.data)
-        })
-        .catch((error)=>{
-            console.log(error);
-            setErrorMsg("unable to fetch data")
-        })
-    },[])
-   // Sum of the colume of credit and debit column
-   useEffect(()=>{
-     if(transactions && transactions.length > 0){
-        const sumOfColumn = (transaction : Transaction[], target : string) =>transaction.filter(t =>t.transactionType  === target)
-        .map(t=>t.amount).reduce((a1:any,a2:any)=>a1+a2,0);
-
-        const creditSum = sumOfColumn(transactions,"CREDIT");
-        const debitSum = sumOfColumn(transactions,"DEBIT");
-        setTransactionSummary({totalCredit : creditSum,totalDebit:debitSum,balance : creditSum - debitSum})
-     }else{
-        setTransactionSummary({totalCredit : 0,totalDebit:0,balance : 0})
-     }
-   },[transactions])
-
-   /// Add row 
-   const add = (transaction: Transaction) => {
-    addTransaction(transaction)
-        .then(response => setTransactions([...transactions, { ...response.data }]))
-        .catch(err => {
-            console.error(err);
-            setErrorMsg("Unable to save records! Please retry later!");
-        });
 }
 
-const update = (transaction: Transaction) => {
-    //transaction.isEditable = undefined;
-    saveTransaction(transaction.id, transaction)
-        .then(resp => setTransactions(transactions.map(t => t.id === transaction.id ? { ...resp.data } : t)))
-        .catch(err => {
-            console.error(err);
-            setErrorMsg("Unable to save records! Please retry later!");
-        });
+function handleDeleteRow()
+{
+
 }
-
-const remove = (id: number) => {
-    deleteTransactionById(id)
-        .then(_resp => setTransactions(transactions.filter(tx => tx.id !== id)))
-        .catch(err => {
-            console.error(err);
-            setErrorMsg("Unable to remove records! Please retry later!");
-        });
-}
-        
-
-const edit = (id: number) => setTransactions(transactions.map(t => t.id === id ? { ...t, isEditable: true } : t))
-
-const cancelEdit = (id: number) => setTransactions(transactions.map(t => t.id === id ? { ...t, isEditable: false } : t))
-
-
     return (
         <>
             <section className="col-sm-10 m-2 mx-auto p-2">
@@ -90,18 +63,26 @@ const cancelEdit = (id: number) => setTransactions(transactions.map(t => t.id ==
                     )
                 }
                 <TransactionHeader />
-                   <TransactionForm  save={add}/>  
+                <TransactionForm   />   
                  
-                {
+                {/* {
                     transactions.length > 0  &&
                    (
                     transactions.map(trans=>trans.isEditable ? 
-                    <TransactionForm key={trans.id} trans={trans} save={update} cancle={cancelEdit}/>
+                    <TransactionForm key={trans.id} trans={trans} />
                     :
-                    <TransactionRows key={trans.id} txn={trans} edit={edit} remove={remove}/>)
+                    <TransactionRows key={trans.id} txn={trans}/>)
                    )
-                } 
-                <TransactionFooter transactionSummary={transactionSummary}/>
+
+                }  */}
+                {
+                    transactions.length > 0 && (
+                        transactions.map(trans=>trans.isEditable ? (
+                            <TransactionForm key={trans.id} trans={trans}/>
+                        ) : <TransactionRows key={trans.id} txn={trans} edit={handleEdit} remove={handleDeleteRow}/>)
+                    )
+                }
+                {/* <TransactionFooter transactionSummary={transactionSummary}/> */}
             </section>
         </>
     )
