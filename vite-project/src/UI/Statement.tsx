@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import "../index.css";
 import TransactionHeader from './TransactionHeader'
 import TransactionForm from './TransactionForm';
@@ -35,7 +35,7 @@ let data = [
 
 export default function Statement() {
     const [transactions, setTransactions] = React.useState(data);
-
+   
  
     console.log('Current transactions:', transactions);
     function addTransaction(newTransaction: Transaction) {
@@ -52,11 +52,13 @@ export default function Statement() {
         console.log(id)
         setTransactions(prevTransactions => prevTransactions.filter(transaction => transaction.id !== id));
     }
+    /// Edit Transaction
+   
     return (
         <div className='statementContainer'>
                 <TransactionHeader />
                 <TransactionForm handleAddNewRow={addTransaction}/>
-                <TransactionRows transactions={transactions} handleDeleteRow={(id) => handleDeleteRow(Number(id))}/>
+                <TransactionRows transactions={transactions} handleDeleteRow={(id) => handleDeleteRow(Number(id))} />
                 <hr/>
         </div>
     )
