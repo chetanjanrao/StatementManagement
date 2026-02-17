@@ -1,0 +1,22 @@
+.table th {
+    border-right: 2px solid rgb(247, 241, 241); /* Green vertical border */
+    text-align: center;
+  }
+  
+  /* Remove the last right border on the last column in the header */
+  .table th:last-child {
+    border-right: none;
+  }
+
+  .tableHeader{
+     
+     width: 90%;
+  }
+
+  .statementContainer{
+    border: 1px solid red;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+  }

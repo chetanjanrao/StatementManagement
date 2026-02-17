@@ -1,98 +1,151 @@
-import { Fragment, useState, type FormEvent } from "react";
-import type { Transaction } from "../Models/Transaction";
+import { useState } from "react";
+import { Transaction } from "../Models/Transaction";
 
-export default function TransactionForm({
-  trans,
-  save,
-  cancel,
-}: {
-  trans?: Transaction;
-  save?: (transactions: Transaction) => void;
-  cancel?: (id: number) => void;
-}) {
-  // Initialize state with either passed transaction or a new empty transaction
-  const [transactions, setTransactions] = useState<Transaction>(
-    trans
-      ? { ...trans } // Use passed transaction for edit
-      : {
-          id: 0,
-          header: "",
-          transactionDate: new Date().toISOString().substring(0, 10), // Today's date in 'YYYY-MM-DD' format
-          transactionType: "CREDIT", // Default value
-          amount: 0,
-        }
-  );
+export default function TransactionForm({handleAddNewRow}: {handleAddNewRow: (newTransaction: Transaction) => void}) {
+  // Define initial form state
+  const [formData, setFormData] = useState<Transaction>({
+    transactionDate: "",
+    header: "",
+    transactionType: "credit",
+    amount: 0,
+  });
 
-
-  function formSubmitted()
-  {
-      
-  }
-
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
+    const { name, value } = e.target;
   
+    // Update state based on input type (Credit or Debit)
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+    
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Collect form data into one object
+    console.log('Form Data:', formData);
+    
+    // Optionally, reset the form
+    setFormData({
+      transactionDate: "",
+      header: "",
+      transactionType: "credit",
+      amount: 0,
+    });
+    handleAddNewRow(formData)
+  };
+
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    const amount = parseFloat(value) || 0;
+
+    // If the transaction type is credit, update the amount as credit
+    if (formData.transactionType === "credit" && name === "inputCredit") {
+      setFormData((prevData) => ({
+        ...prevData,
+        amount: amount,
+      }));
+    }
+
+    // If the transaction type is debit, update the amount as debit
+    if (formData.transactionType === "debit" && name === "inputDebit") {
+      setFormData((prevData) => ({
+        ...prevData,
+        amount: amount,
+      }));
+    }
+  };
 
   return (
-    <>
-      <form className="row p-1 mb-1 border-bottom border-dark" onSubmit={formSubmitted}>
-        <div className="col-1 text-end">{transactions.id}</div>
-        <div className="col-2 text-center">
+    <div>
+      <form className="row g-3 p-2" onSubmit={handleSubmit}>
+        <div className="col-md-2">
+          <label htmlFor="inputDate" className="form-label">
+            Date
+          </label>
           <input
-            className="form-control"
             type="date"
-            value={transactions.transactionDate}
-            onChange={(e) => setTransactions({ ...transactions, transactionDate: e.target.value })}
-          />
-        </div>
-        <div className="col-2">
-          <input
             className="form-control"
-            type="text"
-            placeholder="enter header"
-            value={transactions.header}
-            onChange={(e) => setTransactions({ ...transactions, header: e.target.value })}
+            id="inputDate"
+            name="transactionDate"
+            value={formData.transactionDate}
+            onChange={handleChange}
           />
         </div>
-        <div className="col text-end" >
-          {transactions.transactionType === "CREDIT" && (
-            <input
-              placeholder="amount"
-              type="number"
-              value={transactions.amount}
-              onChange={(e) => setTransactions({ ...transactions, amount: Number(e.target.value) })}
-            />
-          )}
+
+        <div className="col-md-2">
+          <label htmlFor="inputHeader" className="form-label">
+            Header
+          </label>
+          <input
+            type="text"
+            placeholder="Enter header"
+            className="form-control"
+            id="inputHeader"
+            name="header"
+            value={formData.header}
+            onChange={handleChange}
+          />
         </div>
-        <div className="col text-end" >
-          {transactions.transactionType === "DEBIT" && (
+
+        <div className="col-md-2">
+          <label htmlFor="inputTransactionType" className="form-label">
+            Transaction Type
+          </label>
+          <select
+            id="inputTransactionType"
+            name="transactionType"
+            className="form-control"
+            value={formData.transactionType}
+            onChange={handleChange}
+          >
+            <option value="credit">Credit</option>
+            <option value="debit">Debit</option>
+          </select>
+        </div>
+
+        {/* Credit Amount input */}
+        {formData.transactionType === "credit" && (
+          <div className="col-md-2">
+            <label htmlFor="inputCredit" className="form-label">
+              Credit Amount
+            </label>
             <input
               type="number"
-              placeholder="amount"
-              value={transactions.amount}
-              onChange={(e) => setTransactions({ ...transactions, amount: Number(e.target.value) })}
+              className="form-control"
+              id="inputCredit"
+              name="inputCredit"
+              value={formData.amount > 0 ? formData.amount : ""}
+              onChange={handleAmountChange}
             />
-          )}
-        </div>
-        <div className="col-2 text-center">
-          {transactions.isEditable ? (
-            <Fragment>
-              <button className="btn btn-sm btn-primary">
-                <i className="bi bi-floppy" />
-              </button>
-              <button
-                className="btn btn-sm btn-danger ms-1"
-                type="button"
-                onClick={() => cancel && cancel(transactions.id)}
-              >
-                <i className="bi bi-x-circle" />
-              </button>
-            </Fragment>
-          ) : (
-            <button className="btn btn-sm btn-primary">
-              <i className="bi bi-floppy" />
-            </button>
-          )}
+          </div>
+        )}
+
+        {/* Debit Amount input */}
+        {formData.transactionType === "debit" && (
+          <div className="col-md-2">
+            <label htmlFor="inputDebit" className="form-label">
+              Debit Amount
+            </label>
+            <input
+              type="number"
+              className="form-control"
+              id="inputDebit"
+              name="inputDebit"
+              value={formData.amount > 0 ? formData.amount : ""}
+              onChange={handleAmountChange}
+            />
+          </div>
+        )}
+
+        <div className="col-2">
+          <button type="submit" className="btn btn-primary mt-4">
+            Submit
+          </button>
         </div>
       </form>
-    </>
+    </div>
   );
 }

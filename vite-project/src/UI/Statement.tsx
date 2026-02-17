@@ -1,89 +1,63 @@
-import TransactionFooter from "./TransactionFooter";
-import TransactionForm from "./TransactionForm";
-import TransactionRows from "./TransactionRows";
-import TransactionHeader from "./TransactionHeader";
-import {getAllTransactions,getAllTransactionById,deleteTransactionById,addTransaction,saveTransaction} from "../Services/TransactionAPI";
-
-import type { Transaction } from "../Models/Transaction";
-import type { TransactionSummary } from "../Models/TransactionSummary";
-import { useEffect, useState } from "react";
+import React from 'react';
+import "../index.css";
+import TransactionHeader from './TransactionHeader'
+import TransactionForm from './TransactionForm';
+import { Transaction } from '../Models/Transaction';
+import TransactionRows from './TransactionRows';
 
 
-
-const data = [
-    {
-        id: 0,
-        header: "Salary",
-        transactionDate: "2026-01-01",
-        transactionType: "CREDIT",
-        amount: 75000
-    },
+let data = [
     {
         id: 1,
-        header: "Grocery",
-        transactionDate: "2026-01-02",
-        transactionType: "DEBIT",
+        transactionDate: "2024-06-01",
+        header: "Salary",
+        transactionType : "credit",
         amount: 5000
-    }
-];
-
-function addNewRow(){
-
-}
+    },
+    {
+        id: 2,
+        transactionDate: "2024-06-05",
+        header: "Groceries",
+        transactionType : "debit",
+        amount: 150
+      
+    },
+    {
+        id: 3,
+        transactionDate: "2024-06-10",
+        header: "Freelance Project",
+        transactionType : "credit",
+        amount: 1200,
+       
+    },
+   
+]
 
 export default function Statement() {
-    const [transactions, setTransactions] = useState<Transaction[]>(data);
-    const [errorMsg, setErrorMsg] = useState<string | null>(null);
-    const [transactionSummary, setTransactionSummary] = useState<TransactionSummary>({
-        totalCredit: 0,
-        totalDebit: 0,
-        balance: 0
-    })
-   console.log(transactions)
-   
-function handleEdit()
-{
+    const [transactions, setTransactions] = React.useState(data);
 
-}
+ 
+    console.log('Current transactions:', transactions);
+    function addTransaction(newTransaction: Transaction) {
+        const newId = transactions.length > 0 ? transactions[transactions.length-1].id + 1 : 1;
+        setTransactions(prevTransactions => [
+            ...prevTransactions,
+            { ...newTransaction, id: newId }
+          ]);
+        console.log('Adding new transaction:', newTransaction);
+    }
 
-function handleDeleteRow()
-{
-
-}
+    /// Delete transaction by id
+    function handleDeleteRow(id: number) {
+        console.log(id)
+        setTransactions(prevTransactions => prevTransactions.filter(transaction => transaction.id !== id));
+    }
     return (
-        <>
-            <section className="col-sm-10 m-2 mx-auto p-2">
-                <h3>Statement</h3>
-
-                {
-                    errorMsg && (
-                        <div className="alert alert-danger p-2">
-                            <strong>{errorMsg}</strong>
-                        </div>
-                    )
-                }
+        <div className='statementContainer'>
                 <TransactionHeader />
-                <TransactionForm   />   
-                 
-                {/* {
-                    transactions.length > 0  &&
-                   (
-                    transactions.map(trans=>trans.isEditable ? 
-                    <TransactionForm key={trans.id} trans={trans} />
-                    :
-                    <TransactionRows key={trans.id} txn={trans}/>)
-                   )
-
-                }  */}
-                {
-                    transactions.length > 0 && (
-                        transactions.map(trans=>trans.isEditable ? (
-                            <TransactionForm key={trans.id} trans={trans}/>
-                        ) : <TransactionRows key={trans.id} txn={trans} edit={handleEdit} remove={handleDeleteRow}/>)
-                    )
-                }
-                {/* <TransactionFooter transactionSummary={transactionSummary}/> */}
-            </section>
-        </>
+                <TransactionForm handleAddNewRow={addTransaction}/>
+                <TransactionRows transactions={transactions} handleDeleteRow={(id) => handleDeleteRow(Number(id))}/>
+                <hr/>
+        </div>
     )
 }
