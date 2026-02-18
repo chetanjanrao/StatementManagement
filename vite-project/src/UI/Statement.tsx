@@ -58,7 +58,7 @@ export default function Statement() {
         <div className='statementContainer'>
                 <TransactionHeader />
                 <TransactionForm handleAddNewRow={addTransaction}/>
-                <TransactionRows transactions={transactions} handleDeleteRow={(id) => handleDeleteRow(Number(id))} />
+                <TransactionRows transactions={transactions} handleDeleteRow={(id) => handleDeleteRow(Number(id))} setTransactions={setTransactions} />
                 <hr/>
         </div>
     )

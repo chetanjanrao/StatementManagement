@@ -4,6 +4,7 @@ import { Transaction } from "../Models/Transaction";
 export default function TransactionForm({handleAddNewRow}: {handleAddNewRow: (newTransaction: Transaction) => void}) {
   // Define initial form state
   const [formData, setFormData] = useState<Transaction>({
+    id: Date.now(), // Unique ID for the transaction
     transactionDate: "",
     header: "",
     transactionType: "credit",
@@ -29,6 +30,7 @@ export default function TransactionForm({handleAddNewRow}: {handleAddNewRow: (ne
     
     // Optionally, reset the form
     setFormData({
+      id: Date.now(), // Generate a new unique ID for the next transaction
       transactionDate: "",
       header: "",
       transactionType: "credit",
